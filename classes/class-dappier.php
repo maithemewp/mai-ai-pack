@@ -121,13 +121,14 @@ class Mai_AI_Pack_Dappier {
 		}
 
 		// Bail if not configured.
-		if ( ! dappier_is_configured() ) {
+		if ( ! function_exists( 'dappier_is_configured' ) || ! dappier_is_configured() ) {
 			return $query_args;
 		}
 
 		// Get the API key and datamodel ID. We know we have values because we checked above.
 		$api_key      = dappier_get_option( 'api_key' );
 		$datamodel_id = dappier_get_option( 'datamodel_id' );
+		// $aimodel_id   = dappier_get_option( 'aimodel_id' );
 		$permalink    = get_permalink();
 
 		// Check transient cache first.
@@ -138,6 +139,7 @@ class Mai_AI_Pack_Dappier {
 		if ( false === $response ) {
 			// Get the Dappier data.
 			$endpoint = "https://api.dappier.com/app/datamodel/{$datamodel_id}";
+			// $endpoint = "https://api.dappier.com/app/aimodel/{$aimodel_id}";
 			$response = wp_remote_post( $endpoint, [
 				'headers' => [
 					'Authorization' => "Bearer {$api_key}",
