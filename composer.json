@@ -1,0 +1,6 @@
+{
+  "name": "maithemewp/mai-ai-pack",
+  "require": {
+    "yahnis-elsts/plugin-update-checker": "^5"
+  }
+}
