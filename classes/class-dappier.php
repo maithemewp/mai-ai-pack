@@ -151,21 +151,15 @@ class Mai_AI_Pack_Dappier {
 		}
 
 		// Get the API key and datamodel ID. We know we have values because we checked above.
-		$api_key      = dappier_get_option( 'api_key' );
-		$datamodel_id = dappier_get_option( 'datamodel_id' );
+		$api_key        = dappier_get_option( 'api_key' );
 		$external_dm_id = dappier_get_option( 'external_dm_id' );
-		// $aimodel_id   = dappier_get_option( 'aimodel_id' );
-		$permalink    = get_permalink();
-
-		// Check transient cache first.
-		$cache_key = 'dappier_related_' . md5( $permalink );
-		$response  = get_transient( $cache_key );
+		$permalink      = get_permalink();
+		$cache_key      = 'dappier_related_' . md5( $permalink );
+		$response       = get_transient( $cache_key );
 
 		// If not cached, get the Dappier data.
 		if ( false === $response ) {
 			// Get the Dappier data.
-			// $endpoint = "https://api.dappier.com/app/aimodel/{$aimodel_id}";
-			// $endpoint = "https://api.dappier.com/app/datamodel/{$datamodel_id}";
 			$endpoint = "https://api.dappier.com/app/datamodel/{$external_dm_id}";
 			$args     = [
 				'headers' => [
@@ -207,8 +201,6 @@ class Mai_AI_Pack_Dappier {
 
 			return $query_args;
 		}
-
-		ray( $body );
 
 		// Process the body as needed.
 		// ...
