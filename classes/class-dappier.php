@@ -159,17 +159,37 @@ class Mai_AI_Pack_Dappier {
 
 		// If not cached, get the Dappier data.
 		if ( false === $response ) {
-			// Get the Dappier data.
-			$endpoint = "https://api.dappier.com/app/datamodel/{$external_dm_id}";
-			$args     = [
+			/**
+			 * Bild the Dappier args.
+			 *
+			 * @link https://docs.dappier.com/api-reference/endpoint/ai-recommendations
+			 *
+			 * @param string  required `query`            Natural language query, keyword or URL. If URL is specified, our AI analyzes the page context,
+			 *                                            summarizes and provides semantic recommendations based on the content.
+			 * @param integer optional `num_articles_ref` Minimum number of articles from the ref domain. The rest of the articles will come from other sites within the RAG model.
+			 *                                            Defaults to 0.
+			 * @param string  required `ref`              Site domain of where AI recommendations are being displayed. Example format: dappier.com
+			 * @param string  optional `similarity_top_k` Number of results to return.
+			 * @param string  optional `search_algorithm` Search algorithm for retrieving articles.
+			 *                                           'semantic':             (default) retrieves contextually relevant articles based on query/URL content
+			 *                                           'most_recent_semantic': semantic search with most recent articles by publication date
+			 *                                           'most_recent':          retrieves most recent articles by publication date
+			 *                                           'trending':             retrieves articles relevant to trending keywords in past 24 hours
+			 */
+			$args = [
 				'headers' => [
 					'Authorization' => "Bearer {$api_key}",
 					'Content-Type'  => 'application/json',
 				],
 				'body' => wp_json_encode( [
-					'query' => $permalink,
+					'query'            => $permalink,
+					'similarity_top_k' => $query_args['posts_per_page'],
+					// 'search_algorithm' => 'trending',
 				] ),
 			];
+
+			// Get the Dappier data.
+			$endpoint = "https://api.dappier.com/app/datamodel/{$external_dm_id}";
 			$response = wp_remote_post( $endpoint, $args );
 
 			// Cache the response for 5 minutes.
@@ -191,6 +211,7 @@ class Mai_AI_Pack_Dappier {
 
 		// Get the body.
 		$body = wp_remote_retrieve_body( $response );
+		$body = json_decode( $body );
 
 		// Bail if no body.
 		if ( ! $body ) {
@@ -202,8 +223,33 @@ class Mai_AI_Pack_Dappier {
 			return $query_args;
 		}
 
-		// Process the body as needed.
-		// ...
+		$results = isset( $body->results ) ? $body->results : [];
+
+		// Bail if no results.
+		if ( ! $results ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				$message = isset( $response['response']['message'] ) ? $response['response']['message'] : __( 'Unknown error', 'mai-ai-pack' );
+				error_log( 'Dappier API request missing results: ' . $code . ' ' . $message . ' | ' . $endpoint );
+			}
+
+			return $query_args;
+		}
+
+		// Get post IDs.
+		$post_ids = wp_list_pluck( $results, 'content_id' );
+
+		// Bail if no IDs.
+		if ( ! $post_ids ) {
+			return $query_args;
+		}
+
+		// Set IDs.
+		$query_args['post__in'] = $post_ids;
+		$query_args['orderby']  = 'post__in';
+
+		// Unset unnecessary stuff.
+		unset( $query_args['tax_query'] );
+		unset( $query_args['meta_query'] );
 
 		return $query_args;
 	}
