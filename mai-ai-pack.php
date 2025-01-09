@@ -130,7 +130,7 @@ final class Mai_AI_Pack {
 		foreach ( glob( MAI_AI_PACK_PLUGIN_DIR . 'classes/*.php' ) as $file ) { include $file; }
 
 		// Includes.
-		// foreach ( glob( MAI_AI_PACK_PLUGIN_DIR . 'includes/*.php' ) as $file ) { include $file; }
+		foreach ( glob( MAI_AI_PACK_PLUGIN_DIR . 'includes/*.php' ) as $file ) { include $file; }
 
 		// Instantiate classes.
 		$dappier = new Mai_AI_Pack_Dappier;
