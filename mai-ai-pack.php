@@ -132,8 +132,10 @@ final class Mai_AI_Pack {
 		// Includes.
 		foreach ( glob( MAI_AI_PACK_PLUGIN_DIR . 'includes/*.php' ) as $file ) { include $file; }
 
-		// Instantiate classes.
-		$dappier = new Mai_AI_Pack_Dappier;
+		// Instantiate Dappier classes.
+		if ( class_exists( 'Dappier_Plugin' ) ) {
+			$dappier = new Mai_AI_Pack_Dappier;
+		}
 	}
 
 	/**
@@ -144,7 +146,7 @@ final class Mai_AI_Pack {
 	 */
 	public function hooks() {
 		$plugins_link_hook = 'plugin_action_links_mai-ai-pack/mai-ai-pack.php';
-		// add_filter( $plugins_link_hook, [ $this, 'plugins_link' ], 10, 4 );
+		add_filter( $plugins_link_hook, [ $this, 'plugins_link' ], 10, 4 );
 		add_action( 'plugins_loaded',   [ $this, 'updater' ], 12 );
 	}
 
@@ -160,13 +162,13 @@ final class Mai_AI_Pack {
 	 *
 	 * @return array Associative array of plugin action links
 	 */
-	// function plugins_link( $actions, $plugin_file, $plugin_data, $context ) {
-	// 	if ( class_exists( 'Mai_Engine' ) ) {
-	// 		$actions['settings'] = sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=mai-theme' ), __( 'Plugins', 'mai-engine' ) );
-	// 	}
+	function plugins_link( $actions, $plugin_file, $plugin_data, $context ) {
+		if ( class_exists( 'Dappier_Plugin' ) ) {
+			$actions['settings'] = sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=dappier' ), __( 'Dappier Settings', 'mai-ai-pack' ) );
+		}
 
-	// 	return $actions;
-	// }
+		return $actions;
+	}
 
 	/**
 	 * Setup the updater.
