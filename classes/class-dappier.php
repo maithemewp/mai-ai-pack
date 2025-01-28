@@ -70,15 +70,21 @@ class Mai_AI_Pack_Dappier {
 	 */
 	function add_content_areas( $config ) {
 		$config['ai-search-results'] = [
-			'hook'     => 'genesis_loop',
-			'priority' => 5,
-			'default'  => file_get_contents( MAI_AI_PACK_PLUGIN_DIR . 'parts/ai-search-results.php' ),
+			'hook'      => 'genesis_loop',
+			'priority'  => 5,
+			'default'   => file_get_contents( MAI_AI_PACK_PLUGIN_DIR . 'parts/ai-search-results.php' ),
+			'condition' => function() {
+				return is_search();
+			},
 		];
 
 		$config['ai-related-posts'] = [
-			'hook'     => 'genesis_after_entry_content',
-			'priority' => 10,
-			'default'  => file_get_contents( MAI_AI_PACK_PLUGIN_DIR . 'parts/ai-related-posts.php' ),
+			'hook'      => 'genesis_after_entry_content',
+			'priority'  => 10,
+			'default'   => file_get_contents( MAI_AI_PACK_PLUGIN_DIR . 'parts/ai-related-posts.php' ),
+			'condition' => function() {
+				return is_singular( 'post' );
+			},
 		];
 
 		return $config;
