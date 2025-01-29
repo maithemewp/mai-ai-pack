@@ -32,6 +32,7 @@ class Mai_AI_Pack_Dappier {
 		add_filter( 'acf/load_field/key=mai_grid_block_posts_orderby', [ $this, 'add_hide_conditional_logic' ] );
 		add_filter( 'acf/load_field/key=mai_grid_block_posts_order',   [ $this, 'add_hide_conditional_logic' ] );
 		add_filter( 'mai_post_grid_query_args',                        [ $this, 'handle_query_args' ], 10, 2 );
+		add_filter( 'dappier_askai_html',                              [ $this, 'add_askai_html' ], 10, 2 );
 		add_filter( 'dappier_askai_attributes',                        [ $this, 'add_askai_attributes' ] );
 	}
 
@@ -344,6 +345,48 @@ class Mai_AI_Pack_Dappier {
 		unset( $query_args['meta_query'] );
 
 		return $query_args;
+	}
+
+	/**
+	 * Adds a wrapper to the AskAI HTML.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param string        $html  The HTML.
+	 * @param Dappier_AskAi $askai The AskAI instance.
+	 *
+	 * @return string
+	 */
+	function add_askai_html( $html, $askai ) {
+		$atts = '';
+		$attr = [
+			'class' => 'mai-askai',
+		];
+
+		// Location.
+		$location = $askai->get_location();
+		$location = in_array( $location, [ 'before', 'after' ] ) ? $location . '_content' : $location;
+
+		// If location.
+		if ( $location ) {
+			$attr['class'] .= ' mai-askai-' . $location;
+		}
+
+		// If Mai Publisher is active, add the attributes.
+		if ( class_exists( 'Mai_Publisher_Plugin' ) ) {
+			$attr['data-content-name']  = 'mai-askai-' . $location;
+			$attr['data-track-content'] = '';
+		}
+
+		// Loop through the attributes and build the attributes string.
+		foreach ( $attr as $key => $value ) {
+			$atts .= sprintf( ' %s="%s"', $key, $value );
+		}
+
+		// Wrap the HTML in a div with the attributes.
+		$html = sprintf( '<div%s>%s</div>', $atts, $html );
+
+		return $html;
 	}
 
 	/**
