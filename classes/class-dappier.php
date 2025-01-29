@@ -32,8 +32,8 @@ class Mai_AI_Pack_Dappier {
 		add_filter( 'acf/load_field/key=mai_grid_block_posts_orderby', [ $this, 'add_hide_conditional_logic' ] );
 		add_filter( 'acf/load_field/key=mai_grid_block_posts_order',   [ $this, 'add_hide_conditional_logic' ] );
 		add_filter( 'mai_post_grid_query_args',                        [ $this, 'handle_query_args' ], 10, 2 );
-		add_filter( 'dappier_askai_html',                              [ $this, 'add_askai_html' ], 10, 2 );
 		add_filter( 'dappier_askai_attributes',                        [ $this, 'add_askai_attributes' ] );
+		add_filter( 'dappier_askai_html',                              [ $this, 'add_askai_html' ], 10, 2 );
 	}
 
 	/**
@@ -168,10 +168,6 @@ class Mai_AI_Pack_Dappier {
 	 */
 	function add_mpg_choices( $field ) {
 		$field['choices'][ 'dappier_related' ] = __( 'Related (by Dappier AI)', 'mai-ai-pack' );
-
-		// $field['choices'][ 'dappier_semantic' ]             = __( 'Related (Dappier)', 'mai-ai-pack' );
-		// $field['choices'][ 'dappier_trending' ]             = __( 'Related Trending (Dappier)', 'mai-ai-pack' );
-		// $field['choices'][ 'dappier_most_recent_semantic' ] = __( 'Related Recent (Dappier)', 'mai-ai-pack' );
 
 		return $field;
 	}
@@ -348,6 +344,61 @@ class Mai_AI_Pack_Dappier {
 	}
 
 	/**
+	 * Sets defaults to Mai Theme styles.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param array $attributes The attributes.
+	 *
+	 * @return array
+	 */
+	function add_askai_attributes( $attributes ) {
+		$colors = mai_get_colors();
+
+		// $defaults = [
+		// 	'mainBackgroundColor'             => 'var(--color-alt)',
+		// 	'themeColor'                      => 'var(--color-primary)',
+		// 	'promptSuggestionBackgroundColor' => 'var(--button-secondary-background,var(--color-secondary))',
+		// 	'promptSuggestionTextColor'       => 'var(--button-secondary-color)',
+		// 	'messageBackgroundColor'          => 'var(--color-background)',
+		// 	'messageTextColor'                => 'var(--color-body)',
+		// 	'titleColor'                      => 'var(--color-heading)',
+		// 	'containerRadius'                 => 'var(--border-radius)',
+		// 	'elementRadius'                   => 'var(--button-border-radius,var(--border-radius))',
+		// 	'fontSizeHeaderMobile'            => 'var(--font-size-lg)',
+		// 	'fontSizeDefaultMobile'           => 'var(--font-size-base)',
+		// 	'fontSizeHeaderDesktop'           => 'var(--font-size-lg)',
+		// 	'fontSizeDefaultDesktop'          => 'var(--font-size-base)',
+		// ];
+
+		// Temporary until Dappier changes some specs around this, then we'll use properties above.
+		$defaults = [
+			'mainBackgroundColor'             => $colors['alt'],
+			'themeColor'                      => $colors['primary'],
+			'promptSuggestionBackgroundColor' => $colors['secondary'],
+			'promptSuggestionTextColor'       => 'var(--button-secondary-color)',
+			'messageBackgroundColor'          => 'var(--color-background)',
+			'messageTextColor'                => 'var(--color-body)',
+			'titleColor'                      => 'var(--color-heading)',
+			// 'containerRadius'                 => 'var(--border-radius)',
+			// 'elementRadius'                   => 'var(--button-border-radius,var(--border-radius))',
+			// 'fontSizeHeaderMobile'            => 'var(--font-size-lg)',
+			// 'fontSizeDefaultMobile'           => 'var(--font-size-base)',
+			// 'fontSizeHeaderDesktop'           => 'var(--font-size-lg)',
+			// 'fontSizeDefaultDesktop'          => 'var(--font-size-base)',
+		];
+
+		// Loop through the defaults and set them if not already set.
+		foreach ( $defaults as $key => $value ) {
+			if ( ! isset( $attributes[ $key ] ) || in_array( $attributes[ $key ], [ '', 'inherit' ] ) ) {
+				$attributes[ $key ] = $value;
+			}
+		}
+
+		return $attributes;
+	}
+
+	/**
 	 * Adds a wrapper to the AskAI HTML.
 	 *
 	 * @since 0.1.0
@@ -387,41 +438,5 @@ class Mai_AI_Pack_Dappier {
 		$html = sprintf( '<div%s>%s</div>', $atts, $html );
 
 		return $html;
-	}
-
-	/**
-	 * Sets defaults to Mai Theme styles.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param array $attributes The attributes.
-	 *
-	 * @return array
-	 */
-	function add_askai_attributes( $attributes ) {
-		$defaults = [
-			'mainBackgroundColor'             => 'var(--color-alt)',
-			'themeColor'                      => 'var(--color-primary)',
-			'promptSuggestionBackgroundColor' => 'var(--button-secondary-background,var(--color-secondary))',
-			'promptSuggestionTextColor'       => 'var(--button-secondary-color)',
-			'messageBackgroundColor'          => 'var(--color-background)',
-			'messageTextColor'                => 'var(--color-body)',
-			'titleColor'                      => 'var(--color-heading)',
-			'containerRadius'                 => 'var(--border-radius)',
-			'elementRadius'                   => 'var(--button-border-radius,var(--border-radius))',
-			'fontSizeHeaderMobile'            => 'var(--font-size-lg)',
-			'fontSizeDefaultMobile'           => 'var(--font-size-base)',
-			'fontSizeHeaderDesktop'           => 'var(--font-size-lg)',
-			'fontSizeDefaultDesktop'          => 'var(--font-size-base)',
-		];
-
-		// Loop through the defaults and set them if not already set.
-		foreach ( $defaults as $key => $value ) {
-			if ( ! isset( $attributes[ $key ] ) || in_array( $attributes[ $key ], [ '', 'inherit' ] ) ) {
-				$attributes[ $key ] = $value;
-			}
-		}
-
-		return $attributes;
 	}
 }

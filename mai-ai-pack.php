@@ -3,7 +3,7 @@
 /**
  * Plugin Name:     Mai AI Pack
  * Plugin URI:      https://bizbudding.com/
- * Description:     Adds AI features to Mai Theme.
+ * Description:     Adds AI features to Mai Theme. Requires Mai Engine plugin.
  * Version:         0.1.0
  *
  * Author:          BizBudding
@@ -48,7 +48,7 @@ final class Mai_AI_Pack {
 			self::$instance = new Mai_AI_Pack;
 			// Methods.
 			self::$instance->setup_constants();
-			self::$instance->includes();
+			self::$instance->autoload();
 			self::$instance->hooks();
 		}
 		return self::$instance;
@@ -116,26 +116,17 @@ final class Mai_AI_Pack {
 	}
 
 	/**
-	 * Include required files.
+	 * Autoload required files.
 	 *
 	 * @access  private
 	 * @since   0.1.0
 	 * @return  void
 	 */
-	private function includes() {
+	private function autoload() {
 		// Include vendor libraries.
 		require_once __DIR__ . '/vendor/autoload.php';
 
-		// Classes.
-		foreach ( glob( MAI_AI_PACK_PLUGIN_DIR . 'classes/*.php' ) as $file ) { include $file; }
 
-		// Includes.
-		foreach ( glob( MAI_AI_PACK_PLUGIN_DIR . 'includes/*.php' ) as $file ) { include $file; }
-
-		// Instantiate Dappier classes.
-		if ( class_exists( 'Dappier_Plugin' ) ) {
-			$dappier = new Mai_AI_Pack_Dappier;
-		}
 	}
 
 	/**
@@ -147,6 +138,7 @@ final class Mai_AI_Pack {
 	public function hooks() {
 		$plugins_link_hook = 'plugin_action_links_mai-ai-pack/mai-ai-pack.php';
 		add_filter( $plugins_link_hook, [ $this, 'plugins_link' ], 10, 4 );
+		add_action( 'plugins_loaded',   [ $this, 'includes' ] );
 		add_action( 'plugins_loaded',   [ $this, 'updater' ], 12 );
 	}
 
@@ -168,6 +160,34 @@ final class Mai_AI_Pack {
 		}
 
 		return $actions;
+	}
+
+	/**
+	 * Include files.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @return void
+	 */
+	public function includes() {
+		// Bail if Mai Engine is not loaded.
+		if ( ! class_exists( 'Mai_Engine' ) ) {
+			add_action( 'admin_notices', function() {
+				printf( '<div class="notice notice-error"><p>%s</p></div>', __( 'Mai AI Pack requires the Mai Engine plugin.', 'mai-ai-pack' ) );
+			});
+			return;
+		}
+
+		// Classes.
+		foreach ( glob( MAI_AI_PACK_PLUGIN_DIR . 'classes/*.php' ) as $file ) { include $file; }
+
+		// Includes.
+		foreach ( glob( MAI_AI_PACK_PLUGIN_DIR . 'includes/*.php' ) as $file ) { include $file; }
+
+		// Instantiate Dappier classes.
+		if ( class_exists( 'Dappier_Plugin' ) ) {
+			$dappier = new Mai_AI_Pack_Dappier;
+		}
 	}
 
 	/**
