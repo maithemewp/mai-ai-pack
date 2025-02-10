@@ -24,6 +24,7 @@ class Mai_AI_Pack_Dappier {
 	 * @return void
 	 */
 	function hooks() {
+		add_action( 'wp_enqueue_scripts',                              [ $this, 'enqueue_styles' ] );
 		add_filter( 'mai_plugin_dependencies',                         [ $this, 'add_dependencies' ] );
 		add_filter( 'mai_template-parts_config',                       [ $this, 'add_content_areas' ] );
 		add_filter( 'acf/load_fields',                                 [ $this, 'add_mpg_fields' ], 10, 2 );
@@ -34,6 +35,17 @@ class Mai_AI_Pack_Dappier {
 		add_filter( 'mai_post_grid_query_args',                        [ $this, 'handle_query_args' ], 10, 2 );
 		add_filter( 'dappier_askai_attributes',                        [ $this, 'add_askai_attributes' ] );
 		add_filter( 'dappier_askai_html',                              [ $this, 'add_askai_html' ], 10, 2 );
+	}
+
+	/**
+	 * Enqueues styles.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @return void
+	 */
+	function enqueue_styles() {
+		wp_enqueue_style( 'mai-ai-pack-dappier', MAI_AI_PACK_PLUGIN_URL . 'assets/css/mai-ai-pack.css', [], MAI_AI_PACK_VERSION );
 	}
 
 	/**
@@ -353,40 +365,23 @@ class Mai_AI_Pack_Dappier {
 	 * @return array
 	 */
 	function add_askai_attributes( $attributes ) {
-		$colors = mai_get_colors();
-
-		// $defaults = [
-		// 	'mainBackgroundColor'             => 'var(--color-alt)',
-		// 	'themeColor'                      => 'var(--color-primary)',
-		// 	'promptSuggestionBackgroundColor' => 'var(--button-secondary-background,var(--color-secondary))',
-		// 	'promptSuggestionTextColor'       => 'var(--button-secondary-color)',
-		// 	'messageBackgroundColor'          => 'var(--color-background)',
-		// 	'messageTextColor'                => 'var(--color-body)',
-		// 	'titleColor'                      => 'var(--color-heading)',
-		// 	'containerRadius'                 => 'var(--border-radius)',
-		// 	'elementRadius'                   => 'var(--button-border-radius,var(--border-radius))',
-		// 	'fontSizeHeaderMobile'            => 'var(--font-size-lg)',
-		// 	'fontSizeDefaultMobile'           => 'var(--font-size-base)',
-		// 	'fontSizeHeaderDesktop'           => 'var(--font-size-lg)',
-		// 	'fontSizeDefaultDesktop'          => 'var(--font-size-base)',
-		// ];
-
-		// Temporary until Dappier changes some specs around this, then we'll use properties above.
 		$defaults = [
-			'mainBackgroundColor'             => $colors['alt'],
-			'themeColor'                      => $colors['primary'],
-			'promptSuggestionBackgroundColor' => $colors['secondary'],
+			'mainBackgroundColor'             => 'var(--color-alt)',
+			'themeColor'                      => 'var(--color-primary)',
+			'promptSuggestionBackgroundColor' => 'var(--button-secondary-background,var(--color-secondary))',
 			'promptSuggestionTextColor'       => 'var(--button-secondary-color)',
 			'messageBackgroundColor'          => 'var(--color-background)',
 			'messageTextColor'                => 'var(--color-body)',
 			'titleColor'                      => 'var(--color-heading)',
-			// 'containerRadius'                 => 'var(--border-radius)',
-			// 'elementRadius'                   => 'var(--button-border-radius,var(--border-radius))',
-			// 'fontSizeHeaderMobile'            => 'var(--font-size-lg)',
-			// 'fontSizeDefaultMobile'           => 'var(--font-size-base)',
-			// 'fontSizeHeaderDesktop'           => 'var(--font-size-lg)',
-			// 'fontSizeDefaultDesktop'          => 'var(--font-size-base)',
+			'containerRadius'                 => 'var(--border-radius)',
+			'elementRadius'                   => 'var(--button-border-radius,var(--border-radius))',
+			'fontSizeHeaderMobile'            => 'var(--font-size-lg)',
+			'fontSizeDefaultMobile'           => 'var(--font-size-base)',
+			'fontSizeHeaderDesktop'           => 'var(--font-size-lg)',
+			'fontSizeDefaultDesktop'          => 'var(--font-size-base)',
 		];
+
+		// Check for log0.
 
 		// Loop through the defaults and set them if not already set.
 		foreach ( $defaults as $key => $value ) {
