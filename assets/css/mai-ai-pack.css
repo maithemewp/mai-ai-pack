@@ -108,6 +108,7 @@
 	[class*="_chatTextarea"] {
 		flex: 1;
 		max-width: 100%; /* Mai Theme specific */
+		border: var(--input-border, var(--border)); /* Mai Theme specific */
 	}
 
 	/**
