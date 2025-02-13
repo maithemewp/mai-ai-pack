@@ -45,7 +45,11 @@ class Mai_AI_Pack_Dappier {
 	 * @return void
 	 */
 	function enqueue_styles() {
-		wp_enqueue_style( 'mai-ai-pack-dappier', MAI_AI_PACK_PLUGIN_URL . 'assets/css/mai-ai-pack.css', [], MAI_AI_PACK_VERSION );
+		$styles = file_get_contents( MAI_AI_PACK_PLUGIN_DIR . 'assets/css/mai-ai-pack.css' );
+
+		wp_register_style( 'mai-ai-pack-dappier', false );
+		wp_enqueue_style( 'mai-ai-pack-dappier' );
+		wp_add_inline_style( 'mai-ai-pack-dappier', $styles );
 	}
 
 	/**
@@ -366,15 +370,20 @@ class Mai_AI_Pack_Dappier {
 	 */
 	function add_askai_attributes( $attributes ) {
 		$defaults = [
+			'titleColor'                      => 'var(--color-heading)',
 			'mainBackgroundColor'             => 'var(--color-alt)',
 			'themeColor'                      => 'var(--color-primary)',
-			'promptSuggestionBackgroundColor' => 'var(--button-secondary-background,var(--color-secondary))',
-			'promptSuggestionTextColor'       => 'var(--button-secondary-color)',
 			'messageBackgroundColor'          => 'var(--color-background)',
 			'messageTextColor'                => 'var(--color-body)',
-			'titleColor'                      => 'var(--color-heading)',
+			'promptSuggestionBackgroundColor' => 'var(--button-secondary-background,var(--color-secondary))',
+			'promptSuggestionTextColor'       => 'var(--button-secondary-color)',
+			'promptSuggestionRadius'          => 'var(--button-border-radius,var(--border-radius))',
+			'askButtonBackgroundColor'        => 'var(--color-primary)',
+			'askButtonTextColor'              => 'var(--button-color)',
 			'containerRadius'                 => 'var(--border-radius)',
-			'elementRadius'                   => 'var(--button-border-radius,var(--border-radius))',
+			'elementRadius'                   => 'var(--border-radius))',
+			'searchBoxRadius'                 => 'var(--input-border-radius,var(--border-radius))',
+			'askButtonRadius'                 => 'var(--button-border-radius,var(--border-radius))',
 			'fontSizeHeaderMobile'            => 'var(--font-size-lg)',
 			'fontSizeDefaultMobile'           => 'var(--font-size-base)',
 			'fontSizeHeaderDesktop'           => 'var(--font-size-lg)',

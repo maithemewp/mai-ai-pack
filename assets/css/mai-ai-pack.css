@@ -1,16 +1,6 @@
 /* Scoping this CSS to our wrapper div */
 .mai-askai {
 	/**
-	 * Sets padding on the container if the background is not transparent.
-	 * Transparent should be the default IMO.
-	 */
-	dappier-ask-ai-widget:not([mainbackgroundcolor="transparent"]) {
-		[class*="_askAiContainer"] {
-			padding: 1rem;
-		}
-	}
-
-	/**
 	 * Clears out the padding/margin from the container if the background is transparent.
 	 * Transparent should be the default IMO.
 	 */
@@ -32,18 +22,16 @@
 	 * Clears out all of the padding/margin from these elements.
 	 * We'll rely on gap via flexbox.
 	 */
-	[class*="_askAiContent"],
 	[class*="_askAiHeader"],
+	[class*="_streamBoxContainer"],
+	[class*="_markdown"],
 	[class*="_promptSuggestions"],
 	[class*="_promptSampleContainer"],
 	[class*="_promptSampleItem"],
-	[class*="_streamBoxContainer"],
-	[class*="_skeletonItemHorizontal"],
 	[class*="_chatMessageContainer"],
 	[class*="_messageContent"],
-	[class*="_markdown"],
 	[class*="_chatInputContainer"],
-	[class*="_sendButtonText"] {
+	[class*="_footerContainer"] {
 		margin: 0 !important;
 		padding: 0 !important;
 	}
@@ -58,10 +46,6 @@
 		gap: 1rem;
 	}
 
-	[class*="_streamBoxContainer"] {}
-
-	[class*="_promptSuggestions"] {}
-
 	/**
 	 * Sets the chat container to a flex column layout, so we can use gap for spacing.
 	 * Also sets a large max height and overflow for the chat container.
@@ -70,8 +54,6 @@
 		display: flex;
 		flex-direction: column;
 		gap: .5rem;
-		max-height: 80vh;
-		overflow-y: auto;
 	}
 
 	/**
@@ -92,17 +74,16 @@
 	 * Uses flexbox row layout for prompt suggestions, so we can use gap for spacing.
 	 * Removes fixed height so the container can grow as chat messages are added.
 	 */
-	 [class*="_promptSampleScrollContainer"] {
+	[class*="_promptSampleScrollContainer"] {
 		display: flex;
 		flex-wrap: nowrap;
 		gap: .5rem;
-		height: auto;
 	}
 
 	/**
 	 * Sets the prompt suggestion buttons to a smaller font size, but not smaller than 13px.
 	 */
-	 [class*="_boxBasicContainer"] [class*="_boxBasicTypography"] {
+	[class*="_boxBasicContainer"] [class*="_boxBasicTypography"] {
 		font-size: max(13px, 90%);
 	}
 
@@ -118,48 +99,42 @@
 		display: flex;
 		align-items: normal;
 		gap: .5rem;
-		height: auto;
+	}
 
-		/**
-		 * Removes the fixed height and margin from the textarea and button.
-		 * Sets consistent padding for the textarea and button so they are the same height.
-		 */
-		[class*="_chatTextarea"],
-		[class*="MuiButtonBase-root"] {
-			height: auto;
-			margin: 0;
-			padding: .5rem 1rem;
-		}
+	/**
+	 * Allows the textarea to grow and shrink.
+	 * Removes the margin and max width.
+	 */
+	[class*="_chatTextarea"] {
+		flex: 1;
+		max-width: 100%; /* Mai Theme specific */
+	}
 
-		/**
-		 * Sets the line height for the textarea and button and placeholder text.
-		 */
-		[class*="_chatTextarea"],
-		[class*="MuiButtonBase-root"],
-		[class*="_chatTextarea"]::-webkit-input-placeholder,
-		[class*="_chatTextarea"]::-moz-placeholder,
-		[class*="_chatTextarea"]::-ms-input-placeholder,
-		[class*="_chatTextarea"]::placeholder {
-			line-height: 1.1;
-		}
+	/**
+	 * Removes the margin from the send button and disabled button.
+	 */
+	[class*="CHkKka_sendButton"],
+	[class*="CHkKka_sendButtonDisabled"] {
+		margin: 0;
+	}
 
-		/**
-		 * Sets the resize to vertical so the textarea can be resized vertically by dragging the bottom border.
-		 * Sets the border and border radius for the textarea using Mai Theme specific variables.
-		 */
-		[class*="_chatTextarea"] {
-			border: var(--input-border, var(--border)); /* Mai Theme specific */
-			border-radius: var(--input-border-radius, var(--border-radius)); /* Mai Theme specific */
-			resize: vertical;
-		}
+	/**
+	 * Sets the line height for the textarea and button and placeholder text.
+	 */
+	[class*="_chatTextarea"],
+	[class*="MuiButtonBase-root"],
+	[class*="_chatTextarea"]::-webkit-input-placeholder,
+	[class*="_chatTextarea"]::-moz-placeholder,
+	[class*="_chatTextarea"]::-ms-input-placeholder,
+	[class*="_chatTextarea"]::placeholder {
+		line-height: 1.1;
+	}
 
-		/**
-		 * Sets the border and border radius for the button using Mai Theme specific variables.
-		 */
-		[class*="MuiButtonBase-root"] {
-			border: var(--button-border, 0); /* Mai Theme specific */
-			border-radius: var(--button-border-radius, var(--border-radius)); /* Mai Theme specific */
-		}
+	/**
+	 * Sets the border and border radius for the button using Mai Theme specific variables.
+	 */
+	[class*="MuiButtonBase-root"] {
+		border: var(--button-border, 0); /* Mai Theme specific */
 	}
 
 	/**
