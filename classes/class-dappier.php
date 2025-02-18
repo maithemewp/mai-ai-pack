@@ -24,7 +24,6 @@ class Mai_AI_Pack_Dappier {
 	 * @return void
 	 */
 	function hooks() {
-		add_action( 'wp_enqueue_scripts',                              [ $this, 'enqueue_styles' ] );
 		add_filter( 'mai_plugin_dependencies',                         [ $this, 'add_dependencies' ] );
 		add_filter( 'mai_template-parts_config',                       [ $this, 'add_content_areas' ] );
 		add_filter( 'acf/load_fields',                                 [ $this, 'add_mpg_fields' ], 10, 2 );
@@ -35,21 +34,6 @@ class Mai_AI_Pack_Dappier {
 		add_filter( 'mai_post_grid_query_args',                        [ $this, 'handle_query_args' ], 10, 2 );
 		add_filter( 'dappier_askai_attributes',                        [ $this, 'add_askai_attributes' ] );
 		add_filter( 'dappier_askai_html',                              [ $this, 'add_askai_html' ], 10, 2 );
-	}
-
-	/**
-	 * Enqueues styles.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @return void
-	 */
-	function enqueue_styles() {
-		$styles = file_get_contents( MAI_AI_PACK_PLUGIN_DIR . 'assets/css/mai-ai-pack.css' );
-
-		wp_register_style( 'mai-ai-pack-dappier', false );
-		wp_enqueue_style( 'mai-ai-pack-dappier' );
-		wp_add_inline_style( 'mai-ai-pack-dappier', $styles );
 	}
 
 	/**
@@ -418,6 +402,14 @@ class Mai_AI_Pack_Dappier {
 			'class' => 'mai-askai',
 		];
 
+		// Enqueue the styles.
+		if ( is_admin() || wp_is_json_request() ) {
+			$html = (string) $this->enqueue_styles() . $html;
+			$html = trim( $html );
+		} else {
+			$this->enqueue_styles();
+		}
+
 		// Location.
 		$location = $askai->get_location();
 		$location = in_array( $location, [ 'before', 'after' ] ) ? $location . '_content' : $location;
@@ -442,5 +434,31 @@ class Mai_AI_Pack_Dappier {
 		$html = sprintf( '<div%s>%s</div>', $atts, $html );
 
 		return $html;
+	}
+
+	/**
+	 * Enqueues styles.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @return void
+	 */
+	function enqueue_styles() {
+		static $styles = null;
+
+		// If styles are not cached, get them.
+		if ( null === $styles ) {
+			$styles = file_get_contents( MAI_AI_PACK_PLUGIN_DIR . 'assets/css/mai-ai-pack.css' );
+		}
+
+		// If in admin or JSON request (for Server-Side Rendering), return the styles.
+		if ( is_admin() || wp_is_json_request() ) {
+			return sprintf( '<style class="mai-ai-pack-dappier">%s</style>', $styles );
+		}
+
+		// If not in admin, enqueue the styles.
+		wp_register_style( 'mai-ai-pack-dappier', false );
+		wp_enqueue_style( 'mai-ai-pack-dappier' );
+		wp_add_inline_style( 'mai-ai-pack-dappier', $styles );
 	}
 }

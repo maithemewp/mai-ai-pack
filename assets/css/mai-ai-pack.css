@@ -103,19 +103,31 @@
 
 	/**
 	 * Allows the textarea to grow and shrink.
-	 * Removes the margin and max width.
+	 * Uses Mai Theme specific variables for the border.
+	 * This is because Dappier default CSS clears out border.
 	 */
-	[class*="_chatTextarea"] {
+	[class*="_chatTextarea"],
+	[class*="_chatTextarea"]:hover {
 		flex: 1;
 		max-width: 100%; /* Mai Theme specific */
 		border: var(--input-border, var(--border)); /* Mai Theme specific */
 	}
 
 	/**
+	 * Uses Mai Theme specific variables for the border color when the textarea is focused.
+	 * This is because Dappier default CSS clears out border.
+	 */
+	[class*="_chatTextarea"]:focus-visible {
+		border-color: var(--input-border-color-focus, var(--color-link));
+	}
+
+	/**
+	 * Sets min width for flex to work better.
 	 * Removes the margin from the send button and disabled button.
 	 */
 	[class*="CHkKka_sendButton"],
 	[class*="CHkKka_sendButtonDisabled"] {
+		min-width: 10px;
 		margin: 0;
 	}
 
