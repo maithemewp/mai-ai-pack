@@ -192,7 +192,7 @@ class Mai_AI_Pack_Dappier {
 	/**
 	 * Adds conditional logic to hide if query by is dapper_related in Mai Post Grid.
 	 *
-	 * @since TBD
+	 * @since 0.1.0
 	 *
 	 * @param array $field The existing field array.
 	 *
