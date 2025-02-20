@@ -125,8 +125,6 @@ final class Mai_AI_Pack {
 	private function autoload() {
 		// Include vendor libraries.
 		require_once __DIR__ . '/vendor/autoload.php';
-
-
 	}
 
 	/**
