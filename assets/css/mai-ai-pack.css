@@ -126,8 +126,8 @@
 	 * Sets min width for flex to work better.
 	 * Removes the margin from the send button and disabled button.
 	 */
-	[class*="CHkKka_sendButton"],
-	[class*="CHkKka_sendButtonDisabled"] {
+	[class*="_sendButton"],
+	[class*="_sendButtonDisabled"] {
 		min-width: 10px;
 		margin: 0;
 	}
