@@ -25,7 +25,6 @@ class Mai_AI_Pack_Dappier {
 	 */
 	function hooks() {
 		add_filter( 'mai_plugin_dependencies',                         [ $this, 'add_dependencies' ] );
-		add_filter( 'mai_template-parts_config',                       [ $this, 'add_content_areas' ] );
 		add_filter( 'acf/load_fields',                                 [ $this, 'add_mpg_fields' ], 10, 2 );
 		add_filter( 'acf/load_field/key=mai_grid_block_query_by',      [ $this, 'add_mpg_choices' ] );
 		add_filter( 'mai_grid_wp_query_defaults',                      [ $this, 'add_wp_query_defaults' ] );
@@ -58,37 +57,6 @@ class Mai_AI_Pack_Dappier {
 		];
 
 		return $dependencies;
-	}
-
-	/**
-	 * Adds content areas.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param array $config The existing config.
-	 *
-	 * @return array
-	 */
-	function add_content_areas( $config ) {
-		$config['ai-search-results'] = [
-			'hook'      => 'genesis_loop',
-			'priority'  => 5,
-			'default'   => file_get_contents( MAI_AI_PACK_PLUGIN_DIR . 'parts/ai-search-results.php' ),
-			'condition' => function() {
-				return is_search();
-			},
-		];
-
-		$config['ai-related-posts'] = [
-			'hook'      => 'genesis_after_entry_content',
-			'priority'  => 10,
-			'default'   => file_get_contents( MAI_AI_PACK_PLUGIN_DIR . 'parts/ai-related-posts.php' ),
-			'condition' => function() {
-				return is_singular( 'post' );
-			},
-		];
-
-		return $config;
 	}
 
 	/**
