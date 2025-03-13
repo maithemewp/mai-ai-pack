@@ -4,7 +4,7 @@
  * Plugin Name:     Mai AI Pack
  * Plugin URI:      https://bizbudding.com/
  * Description:     Adds AI features to Mai Theme. Requires Mai Engine plugin.
- * Version:         0.2.1
+ * Version:         1.0.0
  *
  * Author:          BizBudding
  * Author URI:      https://bizbudding.com
@@ -91,7 +91,7 @@ final class Mai_AI_Pack {
 	private function setup_constants() {
 		// Plugin version.
 		if ( ! defined( 'MAI_AI_PACK_VERSION' ) ) {
-			define( 'MAI_AI_PACK_VERSION', '0.2.1' );
+			define( 'MAI_AI_PACK_VERSION', '1.0.0' );
 		}
 
 		// Plugin Folder Path.
@@ -103,16 +103,6 @@ final class Mai_AI_Pack {
 		if ( ! defined( 'MAI_AI_PACK_PLUGIN_URL' ) ) {
 			define( 'MAI_AI_PACK_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 		}
-
-		// // Plugin Root File.
-		// if ( ! defined( 'MAI_AI_PACK_PLUGIN_FILE' ) ) {
-		// 	define( 'MAI_AI_PACK_PLUGIN_FILE', __FILE__ );
-		// }
-
-		// // Plugin Base Name
-		// if ( ! defined( 'MAI_AI_PACK_BASENAME' ) ) {
-		// 	define( 'MAI_AI_PACK_BASENAME', dirname( plugin_basename( __FILE__ ) ) );
-		// }
 	}
 
 	/**
