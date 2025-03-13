@@ -1,0 +1,184 @@
+/* Scoping this CSS to our wrapper div */
+.mai-askai {
+	/**
+	 * Clears out the padding/margin from the container if the background is transparent.
+	 * Transparent should be the default IMO.
+	 */
+	dappier-ask-ai-widget[mainbackgroundcolor="transparent"] {
+		[class*="_askAiContainer"] {
+			padding: 0;
+		}
+	}
+
+	/**
+	 * Clears out the chat container if when it's empty.
+	 * Since we're using gap for spacing, an empty element will cause double spacing.
+	 */
+	[class*="_chatContainer"]:empty {
+		display: none;
+	}
+
+	/**
+	 * Clears out all of the padding/margin from these elements.
+	 * We'll rely on gap via flexbox.
+	 */
+	[class*="_askAiHeader"],
+	[class*="_streamBoxContainer"],
+	[class*="_markdown"],
+	[class*="_promptSuggestions"],
+	[class*="_promptSampleContainer"],
+	[class*="_promptSampleItem"],
+	[class*="_chatMessageContainer"],
+	[class*="_messageContent"],
+	[class*="_chatInputContainer"],
+	[class*="_footerContainer"] {
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+
+	/**
+	 * Uses flexbox column layout for these container elements, so we can use gap for spacing.
+	 */
+	[class*="_askAiContent"],
+	[class*="_promptSuggestions"] {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	/**
+	 * Sets the chat container to a flex column layout, so we can use gap for spacing.
+	 * Also sets a large max height and overflow for the chat container.
+	 */
+	[class*="_chatContainer"] {
+		display: flex;
+		flex-direction: column;
+		gap: .5rem;
+		margin-block-end: 1rem;
+	}
+
+	/**
+	 * Individual chat bubble/message.
+	 * Unsets the width, this way each bubble won't be wider than the content
+	 * but the AI response can grow to full width so it's more readable.
+	 * Okay to force a border radius, this is expected UI for chat bubbles.
+	 */
+	[class*="_messageStack"] {
+		width: unset;
+		display: flex;
+		gap: .75rem;
+		padding: .75rem;
+		border-radius: 12px;
+	}
+
+	/**
+	 * Uses flexbox row layout for prompt suggestions, so we can use gap for spacing.
+	 * Removes fixed height so the container can grow as chat messages are added.
+	 */
+	[class*="_promptSampleScrollContainer"] {
+		display: flex;
+		flex-wrap: nowrap;
+		gap: .5rem;
+	}
+
+	/**
+	 * Sets the prompt suggestion buttons to a smaller font size, but not smaller than 13px.
+	 */
+	[class*="_boxBasicContainer"] [class*="_boxBasicTypography"] {
+		font-size: max(13px, 90%);
+	}
+
+	/**
+	 * Chat search/textarea input container.
+	 * Removes fixed height.
+	 * Uses flexbox row layout for the textarea and button, so we can use gap for spacing.
+	 *
+	 * The other items are nested to make sure this CSS is more specific than the dappier CSS.
+	 * If/when this stuff gets into dappier CSS, the nested selectors can be removed.
+	 */
+	[class*="_chatInputContainer"] {
+		display: flex;
+		align-items: normal;
+		gap: .5rem;
+	}
+
+	/**
+	 * Allows the textarea to grow and shrink.
+	 * Uses Mai Theme specific variables for the border.
+	 * This is because Dappier default CSS clears out border.
+	 */
+	[class*="_chatTextarea"],
+	[class*="_chatTextarea"]:hover {
+		flex: 1;
+		max-width: 100%; /* Mai Theme specific */
+		border: var(--input-border, var(--border)); /* Mai Theme specific */
+	}
+
+	/**
+	 * Uses Mai Theme specific variables for the border color when the textarea is focused.
+	 * This is because Dappier default CSS clears out border.
+	 */
+	[class*="_chatTextarea"]:focus-visible {
+		border-color: var(--input-border-color-focus, var(--color-link));
+	}
+
+	/**
+	 * Sets min width for flex to work better.
+	 * Removes the margin from the send button and disabled button.
+	 */
+	[class*="_sendButton"],
+	[class*="_sendButtonDisabled"] {
+		min-width: 10px;
+		margin: 0;
+	}
+
+	/**
+	 * Sets the line height for the textarea and button and placeholder text.
+	 */
+	[class*="_chatTextarea"],
+	[class*="MuiButtonBase-root"],
+	[class*="_chatTextarea"]::-webkit-input-placeholder,
+	[class*="_chatTextarea"]::-moz-placeholder,
+	[class*="_chatTextarea"]::-ms-input-placeholder,
+	[class*="_chatTextarea"]::placeholder {
+		line-height: 1.1;
+	}
+
+	/**
+	 * Sets the border and border radius for the button using Mai Theme specific variables.
+	 */
+	[class*="MuiButtonBase-root"] {
+		border: var(--button-border, 0); /* Mai Theme specific */
+	}
+
+	/**
+	 * Content recommendations carousel.
+	 * This is already flexbox and uses the old padding trick for gap,
+	 * so this adds negative margin to make the container flush to the edges.
+	 *
+	 * I attempted to use flexbox for the gap too, but it caused wrapping issues
+	 * so I didn't spend too much time on it.
+	 */
+	[class*="_carouselSlideContainer"] {
+		margin-inline: -.5rem;
+	}
+
+	/**
+	 * Sets the margin and padding for the carousel items.
+	 * This is already in dappier CSS but I needed to make sure it stayed
+	 * .5 rem so the negative margin above matches.
+	 */
+	[class*="_itemStack"] {
+		margin: 0;
+		padding: .5rem;
+	}
+
+	/**
+	 * Removes the border radius from the image container.
+	 * I'm not sure defaulting to rounded in dappier CSS makes the most sense here.
+	 */
+	[class*="_itemImageContainer"],
+	[class*="_itemImageContainerMobile"] {
+		border-radius: 0;
+	}
+}

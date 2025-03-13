@@ -3,8 +3,8 @@
 /**
  * Plugin Name:     Mai AI Pack
  * Plugin URI:      https://bizbudding.com/
- * Description:     Adds AI features to Mai Theme.
- * Version:         0.1.0
+ * Description:     Adds AI features to Mai Theme. Requires Mai Engine plugin.
+ * Version:         1.0.0
  *
  * Author:          BizBudding
  * Author URI:      https://bizbudding.com
@@ -48,7 +48,7 @@ final class Mai_AI_Pack {
 			self::$instance = new Mai_AI_Pack;
 			// Methods.
 			self::$instance->setup_constants();
-			self::$instance->includes();
+			self::$instance->autoload();
 			self::$instance->hooks();
 		}
 		return self::$instance;
@@ -91,7 +91,7 @@ final class Mai_AI_Pack {
 	private function setup_constants() {
 		// Plugin version.
 		if ( ! defined( 'MAI_AI_PACK_VERSION' ) ) {
-			define( 'MAI_AI_PACK_VERSION', '0.1.0' );
+			define( 'MAI_AI_PACK_VERSION', '1.0.0' );
 		}
 
 		// Plugin Folder Path.
@@ -103,37 +103,18 @@ final class Mai_AI_Pack {
 		if ( ! defined( 'MAI_AI_PACK_PLUGIN_URL' ) ) {
 			define( 'MAI_AI_PACK_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 		}
-
-		// // Plugin Root File.
-		// if ( ! defined( 'MAI_AI_PACK_PLUGIN_FILE' ) ) {
-		// 	define( 'MAI_AI_PACK_PLUGIN_FILE', __FILE__ );
-		// }
-
-		// // Plugin Base Name
-		// if ( ! defined( 'MAI_AI_PACK_BASENAME' ) ) {
-		// 	define( 'MAI_AI_PACK_BASENAME', dirname( plugin_basename( __FILE__ ) ) );
-		// }
 	}
 
 	/**
-	 * Include required files.
+	 * Autoload required files.
 	 *
 	 * @access  private
 	 * @since   0.1.0
 	 * @return  void
 	 */
-	private function includes() {
+	private function autoload() {
 		// Include vendor libraries.
 		require_once __DIR__ . '/vendor/autoload.php';
-
-		// Classes.
-		foreach ( glob( MAI_AI_PACK_PLUGIN_DIR . 'classes/*.php' ) as $file ) { include $file; }
-
-		// Includes.
-		// foreach ( glob( MAI_AI_PACK_PLUGIN_DIR . 'includes/*.php' ) as $file ) { include $file; }
-
-		// Instantiate classes.
-		$dappier = new Mai_AI_Pack_Dappier;
 	}
 
 	/**
@@ -144,7 +125,8 @@ final class Mai_AI_Pack {
 	 */
 	public function hooks() {
 		$plugins_link_hook = 'plugin_action_links_mai-ai-pack/mai-ai-pack.php';
-		// add_filter( $plugins_link_hook, [ $this, 'plugins_link' ], 10, 4 );
+		add_filter( $plugins_link_hook, [ $this, 'plugins_link' ], 10, 4 );
+		add_action( 'plugins_loaded',   [ $this, 'includes' ] );
 		add_action( 'plugins_loaded',   [ $this, 'updater' ], 12 );
 	}
 
@@ -160,13 +142,41 @@ final class Mai_AI_Pack {
 	 *
 	 * @return array Associative array of plugin action links
 	 */
-	// function plugins_link( $actions, $plugin_file, $plugin_data, $context ) {
-	// 	if ( class_exists( 'Mai_Engine' ) ) {
-	// 		$actions['settings'] = sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=mai-theme' ), __( 'Plugins', 'mai-engine' ) );
-	// 	}
+	function plugins_link( $actions, $plugin_file, $plugin_data, $context ) {
+		if ( class_exists( 'Dappier_Plugin' ) ) {
+			$actions['settings'] = sprintf( '<a href="%s">%s</a>', admin_url( 'admin.php?page=dappier' ), __( 'Dappier Settings', 'mai-ai-pack' ) );
+		}
 
-	// 	return $actions;
-	// }
+		return $actions;
+	}
+
+	/**
+	 * Include files.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @return void
+	 */
+	public function includes() {
+		// Bail if Mai Engine is not loaded.
+		if ( ! class_exists( 'Mai_Engine' ) ) {
+			add_action( 'admin_notices', function() {
+				printf( '<div class="notice notice-error"><p>%s</p></div>', __( 'Mai AI Pack requires the Mai Engine plugin.', 'mai-ai-pack' ) );
+			});
+			return;
+		}
+
+		// Classes.
+		foreach ( glob( MAI_AI_PACK_PLUGIN_DIR . 'classes/*.php' ) as $file ) { include $file; }
+
+		// Includes.
+		foreach ( glob( MAI_AI_PACK_PLUGIN_DIR . 'includes/*.php' ) as $file ) { include $file; }
+
+		// Instantiate Dappier classes.
+		if ( class_exists( 'Dappier_Plugin' ) ) {
+			$dappier = new Mai_AI_Pack_Dappier;
+		}
+	}
 
 	/**
 	 * Setup the updater.
