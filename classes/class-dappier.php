@@ -370,9 +370,12 @@ class Mai_AI_Pack_Dappier {
 			'class' => 'mai-askai',
 		];
 
+		// Check if we're in the editor.
+		$return = is_admin() || 'editor' === $askai->get_location();
+
 		// Enqueue the styles.
-		if ( is_admin() || wp_is_json_request() ) {
-			$html = (string) $this->enqueue_styles() . $html;
+		if ( $return ) {
+			$html = (string) $this->enqueue_styles( $return ) . $html;
 			$html = trim( $html );
 		} else {
 			$this->enqueue_styles();
@@ -409,9 +412,11 @@ class Mai_AI_Pack_Dappier {
 	 *
 	 * @since 0.1.0
 	 *
+	 * @param bool $return Whether to return the styles.
+	 *
 	 * @return void
 	 */
-	function enqueue_styles() {
+	function enqueue_styles( $return = false ) {
 		static $styles = null;
 
 		// If styles are not cached, get them.
@@ -419,8 +424,8 @@ class Mai_AI_Pack_Dappier {
 			$styles = file_get_contents( MAI_AI_PACK_PLUGIN_DIR . 'assets/css/mai-ai-pack.css' );
 		}
 
-		// If in admin or JSON request (for Server-Side Rendering), return the styles.
-		if ( is_admin() || wp_is_json_request() ) {
+		// If returning, return the styles.
+		if ( $return ) {
 			return sprintf( '<style class="mai-ai-pack-dappier">%s</style>', $styles );
 		}
 
