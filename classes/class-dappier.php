@@ -25,7 +25,7 @@ class Mai_AI_Pack_Dappier {
 	 */
 	function hooks() {
 		add_filter( 'mai_plugin_dependencies',                         [ $this, 'add_dependencies' ] );
-		add_filter( 'acf/load_fields',                                 [ $this, 'add_mpg_fields' ], 10, 2 );
+		add_filter( 'mai_grid_block_wp_query_fields',                  [ $this, 'add_mpg_fields' ] );
 		add_filter( 'acf/load_field/key=mai_grid_block_query_by',      [ $this, 'add_mpg_choices' ] );
 		add_filter( 'mai_grid_wp_query_defaults',                      [ $this, 'add_wp_query_defaults' ] );
 		add_filter( 'acf/load_field/key=mai_grid_block_posts_orderby', [ $this, 'add_hide_conditional_logic' ] );
@@ -60,69 +60,44 @@ class Mai_AI_Pack_Dappier {
 	}
 
 	/**
-	 * Filters the $fields array.
+	 * Adds the orderby_dappier field to the Mai Post Grid.
 	 *
 	 * @since 0.1.0
+	 * @since 1.0.1 Changed to `mai_grid_block_wp_query_fields` filter. Requires Mai Engine >= 2.26.1.
 	 *
-	 * @param array $fields The array of fields.
-	 * @param array $parent The parent field group.
+	 * @param array $fields The fields.
 	 *
 	 * @return array
 	 */
-	function add_mpg_fields( $fields, $parent ) {
-		// Bail if not in admin.
-		if ( ! is_admin() ) {
-			return $fields;
-		}
+	function add_mpg_fields( $fields ) {
+		// Find the index of the query_by field.
+		$query_index = array_search( 'mai_grid_block_query_by', array_column( $fields, 'key' ) );
 
-		// Bail if not the mai_post_grid_field_group.
-		if ( ! isset( $parent['key'] ) || 'mai_post_grid_field_group' !== $parent['key'] ) {
-			return $fields;
-		}
-
-		// Loop through the fields.
-		foreach ( $fields as $index => $field ) {
-			// Skip if not the mai_post_grid_clone field.
-			if ( 'mai_post_grid_clone' !== $field['key'] ) {
-				continue;
-			}
-
-			// Get the sub fields.
-			$sub_fields  = $field['sub_fields'];
-			$sub_keys    = wp_list_pluck( $sub_fields, 'key' );
-			$query_index = array_search( 'mai_grid_block_query_by', $sub_keys );
-			$new_field   = [
-				'key'     => 'mai_grid_block_posts_orderby_dappier',
-				'name'    => 'orderby_dappier',
-				'type'    => 'select',
-				'choices' => [
-					'semantic'             => __( 'Ordered by Relevance', 'mai-ai-pack' ),
-					'trending'             => __( 'Ordered by Trending', 'mai-ai-pack' ),
-					'most_recent_semantic' => __( 'Ordered by Date', 'mai-ai-pack' ),
+		// New orderby field.
+		$new_field = [
+			'key'           => 'mai_grid_block_posts_orderby_dappier',
+			'name'          => 'orderby_dappier',
+			'type'          => 'select',
+			'default_value' => 'semantic',
+			'choices'       => [
+				'semantic'             => __( 'Ordered by Relevance', 'mai-ai-pack' ),
+				'trending'             => __( 'Ordered by Trending', 'mai-ai-pack' ),
+				'most_recent_semantic' => __( 'Ordered by Date', 'mai-ai-pack' ),
+			],
+			'conditional_logic' => [
+				[
+					'field'    => 'mai_grid_block_query_by',
+					'operator' => '==',
+					'value'    => 'dappier_related',
 				],
-				'conditional_logic' => [
-					[
-						'field'    => 'mai_grid_block_query_by',
-						'operator' => '==',
-						'value'    => 'dappier_related',
-					],
-				],
-			];
+			],
+		];
 
-			// Insert $new_field after the query_by field in sub_fields.
-			array_splice( $sub_fields, $query_index + 1, 0, [ $new_field ] );
+		// Insert the new field after the query_by field
+		array_splice( $fields, $query_index + 1, 0, [ $new_field ] );
 
-			// Update the sub_fields.
-			$fields[ $index ]['sub_fields'] = $sub_fields;
-
-			// Reindex the array.
-			$fields = array_values( $fields );
-
-			// We're done.
-			return $fields;
-		}
-
-		return $fields;
+		// Reindex the array.
+		return array_values( $fields );
 	}
 
 	/**
@@ -142,8 +117,9 @@ class Mai_AI_Pack_Dappier {
 
 	/**
 	 * Adds defaults to the WP Query.
-	 * This is necessary because the `orderby_dappier` field
-	 * would not be passed to other filters otherwise.
+	 * This is necessary because the `orderby_dappier` field value would:
+	 * 1. Never have it's value retrieved.
+	 * 2. Not be passed to other filters.
 	 *
 	 * @since 0.1.0
 	 *
@@ -258,7 +234,12 @@ class Mai_AI_Pack_Dappier {
 			// Bail if there's an error.
 			if ( 200 !== $code ) {
 				if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-					$message = isset( $response['response']['message'] ) ? $response['response']['message'] : __( 'Unknown error', 'mai-ai-pack' );
+					if ( is_wp_error( $response ) ) {
+						$message = $response->get_error_message();
+					} else {
+						$message = isset( $response['response']['message'] ) ? $response['response']['message'] : __( 'Unknown error', 'mai-ai-pack' );
+					}
+
 					error_log( 'Dappier API request failed: ' . $code . ' ' . $message . ' | ' . $endpoint );
 				}
 
@@ -273,7 +254,12 @@ class Mai_AI_Pack_Dappier {
 		// Bail if no body.
 		if ( ! $body ) {
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				$message = isset( $response['response']['message'] ) ? $response['response']['message'] : __( 'Unknown error', 'mai-ai-pack' );
+				if ( is_wp_error( $response ) ) {
+					$message = $response->get_error_message();
+				} else {
+					$message = isset( $response['response']['message'] ) ? $response['response']['message'] : __( 'Unknown error', 'mai-ai-pack' );
+				}
+
 				error_log( 'Dappier API request missing body: ' . $code . ' ' . $message . ' | ' . $endpoint );
 			}
 
@@ -285,7 +271,12 @@ class Mai_AI_Pack_Dappier {
 		// Bail if no results.
 		if ( ! $results ) {
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				$message = isset( $response['response']['message'] ) ? $response['response']['message'] : __( 'Unknown error', 'mai-ai-pack' );
+				if ( is_wp_error( $response ) ) {
+					$message = $response->get_error_message();
+				} else {
+					$message = isset( $response['response']['message'] ) ? $response['response']['message'] : __( 'Unknown error', 'mai-ai-pack' );
+				}
+
 				error_log( 'Dappier API request missing results: ' . $code . ' ' . $message . ' | ' . $endpoint );
 			}
 
