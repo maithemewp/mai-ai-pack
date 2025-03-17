@@ -4,7 +4,7 @@
  * Plugin Name:     Mai AI Pack
  * Plugin URI:      https://bizbudding.com/
  * Description:     Adds AI features to Mai Theme. Requires Mai Engine plugin.
- * Version:         1.0.0
+ * Version:         1.0.1
  *
  * Author:          BizBudding
  * Author URI:      https://bizbudding.com
@@ -91,7 +91,7 @@ final class Mai_AI_Pack {
 	private function setup_constants() {
 		// Plugin version.
 		if ( ! defined( 'MAI_AI_PACK_VERSION' ) ) {
-			define( 'MAI_AI_PACK_VERSION', '1.0.0' );
+			define( 'MAI_AI_PACK_VERSION', '1.0.1' );
 		}
 
 		// Plugin Folder Path.
@@ -125,9 +125,11 @@ final class Mai_AI_Pack {
 	 */
 	public function hooks() {
 		$plugins_link_hook = 'plugin_action_links_mai-ai-pack/mai-ai-pack.php';
-		add_filter( $plugins_link_hook, [ $this, 'plugins_link' ], 10, 4 );
-		add_action( 'plugins_loaded',   [ $this, 'includes' ] );
-		add_action( 'plugins_loaded',   [ $this, 'updater' ], 12 );
+		add_filter( $plugins_link_hook,        [ $this, 'plugins_link' ], 10, 4 );
+		add_filter( 'mai_plugin_dependencies', [ $this, 'add_dependencies' ] );
+		add_action( 'plugins_loaded',          [ $this, 'includes' ] );
+		add_action( 'plugins_loaded',          [ $this, 'updater' ], 12 );
+
 	}
 
 	/**
@@ -148,6 +150,30 @@ final class Mai_AI_Pack {
 		}
 
 		return $actions;
+	}
+
+	/**
+	 * Add dependencies.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param array $dependencies The dependencies.
+	 *
+	 * @return array
+	 */
+	function add_dependencies( $dependencies ) {
+		$dependencies[] = [
+			'name'     => 'Dappier for WordPress',
+			'host'     => 'github',
+			'url'      => 'https://dappier.com/',
+			'uri'      => 'DappierAI/dappier-wordpress',
+			'slug'     => 'dappier-wordpress/dappier-wordpress.php',
+			'branch'   => 'production',
+			'required' => true,
+			'token'    => null,
+		];
+
+		return $dependencies;
 	}
 
 	/**
