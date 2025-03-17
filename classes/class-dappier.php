@@ -24,7 +24,6 @@ class Mai_AI_Pack_Dappier {
 	 * @return void
 	 */
 	function hooks() {
-		add_filter( 'mai_plugin_dependencies',                         [ $this, 'add_dependencies' ] );
 		add_filter( 'mai_grid_block_wp_query_fields',                  [ $this, 'add_mpg_fields' ] );
 		add_filter( 'acf/load_field/key=mai_grid_block_query_by',      [ $this, 'add_mpg_choices' ] );
 		add_filter( 'mai_grid_wp_query_defaults',                      [ $this, 'add_wp_query_defaults' ] );
@@ -33,30 +32,6 @@ class Mai_AI_Pack_Dappier {
 		add_filter( 'mai_post_grid_query_args',                        [ $this, 'handle_query_args' ], 10, 2 );
 		add_filter( 'dappier_askai_attributes',                        [ $this, 'add_askai_attributes' ] );
 		add_filter( 'dappier_askai_html',                              [ $this, 'add_askai_html' ], 10, 2 );
-	}
-
-	/**
-	 * Add dependencies.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param array $dependencies The dependencies.
-	 *
-	 * @return array
-	 */
-	function add_dependencies( $dependencies ) {
-		$dependencies[] = [
-			'name'     => 'Dappier for WordPress',
-			'host'     => 'github',
-			'url'      => 'https://dappier.com/',
-			'uri'      => 'DappierAI/dappier-wordpress',
-			'slug'     => 'dappier-wordpress/dappier-wordpress.php',
-			'branch'   => 'production',
-			'required' => true,
-			'token'    => null,
-		];
-
-		return $dependencies;
 	}
 
 	/**
