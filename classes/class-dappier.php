@@ -222,9 +222,10 @@ class Mai_AI_Pack_Dappier {
 			}
 		}
 
-		// Get the body.
+		// Get the body and code.
 		$body = wp_remote_retrieve_body( $response );
 		$body = json_decode( $body );
+		$code = wp_remote_retrieve_response_code( $response );
 
 		// Bail if no body.
 		if ( ! $body ) {
@@ -235,7 +236,7 @@ class Mai_AI_Pack_Dappier {
 					$message = isset( $response['response']['message'] ) ? $response['response']['message'] : __( 'Unknown error', 'mai-ai-pack' );
 				}
 
-				error_log( 'Dappier API request missing body: ' . $code . ' ' . $message . ' | ' . $endpoint );
+				error_log( 'Dappier API request missing body: ' . $code . ' ' . $message );
 			}
 
 			return $query_args;
@@ -252,7 +253,7 @@ class Mai_AI_Pack_Dappier {
 					$message = isset( $response['response']['message'] ) ? $response['response']['message'] : __( 'Unknown error', 'mai-ai-pack' );
 				}
 
-				error_log( 'Dappier API request missing results: ' . $code . ' ' . $message . ' | ' . $endpoint );
+				error_log( 'Dappier API request missing results: ' . $code . ' ' . $message );
 			}
 
 			return $query_args;
