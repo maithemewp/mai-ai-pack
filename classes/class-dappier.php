@@ -167,6 +167,9 @@ class Mai_AI_Pack_Dappier {
 
 		// If not cached, get the Dappier data.
 		if ( false === $response ) {
+			$domain = home_url();
+			$host   = wp_parse_url( $domain, PHP_URL_HOST );
+
 			/**
 			 * Build the Dappier args.
 			 *
@@ -191,6 +194,7 @@ class Mai_AI_Pack_Dappier {
 				],
 				'body' => wp_json_encode( [
 					'query'            => $permalink,
+					'ref'              => $host,
 					'similarity_top_k' => $query_args['posts_per_page'],
 					'search_algorithm' => $algorithm,
 				] ),
@@ -244,6 +248,10 @@ class Mai_AI_Pack_Dappier {
 
 		$results = isset( $body->results ) ? $body->results : [];
 
+		// if ( current_user_can( 'manage_options' ) ) {
+		// 	printf( '<pre>%s</pre>', print_r( $results, true ) );
+		// }
+
 		// Bail if no results.
 		if ( ! $results ) {
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
@@ -259,8 +267,20 @@ class Mai_AI_Pack_Dappier {
 			return $query_args;
 		}
 
+		// if ( current_user_can( 'manage_options' ) ) {
+		// 	printf( '<pre>%s</pre>', print_r( $results, true ) );
+		// }
+
 		// Get post IDs.
-		$post_ids = wp_list_pluck( $results, 'content_id' );
+		// Can't use wp_list_pluck() because some tests showed results without content_id.
+		$post_ids = array_filter(
+			array_map(
+				function( $item ) {
+					return isset( $item->content_id ) ? $item->content_id : null;
+				},
+				$results
+			)
+		);
 
 		// Bail if no IDs.
 		if ( ! $post_ids ) {
