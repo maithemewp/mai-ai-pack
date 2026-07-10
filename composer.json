@@ -2,5 +2,29 @@
   "name": "maithemewp/mai-ai-pack",
   "require": {
     "yahnis-elsts/plugin-update-checker": "^5"
+  },
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/bizbudding/deployable-guard"
+    }
+  ],
+  "require-dev": {
+    "bizbudding/deployable-guard": "^1"
+  },
+  "scripts": {
+    "install-git-hooks": [
+      "@php vendor/bin/deployable-guard install-hook"
+    ],
+    "post-install-cmd": [
+      "@install-git-hooks"
+    ],
+    "post-update-cmd": [
+      "@install-git-hooks"
+    ]
+  },
+  "scripts-no-dev": {
+    "post-install-cmd": [],
+    "post-update-cmd": []
   }
 }
