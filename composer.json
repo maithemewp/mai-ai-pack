@@ -14,7 +14,7 @@
   },
   "scripts": {
     "install-git-hooks": [
-      "@php vendor/bin/deployable-guard install-hook"
+      "sh -c 'test -f vendor/bin/deployable-guard && php vendor/bin/deployable-guard install-hook || true'"
     ],
     "post-install-cmd": [
       "@install-git-hooks"
@@ -22,9 +22,5 @@
     "post-update-cmd": [
       "@install-git-hooks"
     ]
-  },
-  "scripts-no-dev": {
-    "post-install-cmd": [],
-    "post-update-cmd": []
   }
 }
