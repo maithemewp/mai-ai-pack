@@ -5,6 +5,7 @@
  * Plugin URI:      https://bizbudding.com/
  * Description:     Adds AI features to Mai Theme. Requires Mai Engine plugin.
  * Version:         1.0.2
+ * Requires PHP:    8.1
  *
  * Author:          BizBudding
  * Author URI:      https://bizbudding.com
